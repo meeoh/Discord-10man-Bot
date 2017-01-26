@@ -14,7 +14,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.content.startswith('!test'):
-        await client.send_message(message.channel,'KIENS MY DAD');
+        await client.send_message(message.channel,'Hey sons');
     #     counter = 0
     #     tmp = await client.send_message(message.channel, 'Calculating messages...')
     #     async for log in client.logs_from(message.channel, limit=100):
