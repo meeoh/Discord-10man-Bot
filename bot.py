@@ -6,6 +6,8 @@ from pprint import pprint
 client = discord.Client()
 ourServer = None
 inProgress = False
+readyUsers = []
+
 
 @client.event
 async def on_ready():
@@ -14,79 +16,42 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')    
-    #iterate over all servers
-    t = iter(client.servers)    
-    for server in t:         
-        #find ours and save it   
-        if(server.name == "10 men"):            
-            ourServer = server
-
-
-    #EVERYTHING BELOW WILL GO INTO THE ON MESSAGE UNDER !SCRIM, ITS JUST EASIER TO PUT HERE FOR TESTING PURPOSES
-    #SO WE DONT HAVE TO SPAM THE DISCORD WITH !SCRIM
-
-    #check whos all online
-    onlineUsers = []
-    
-    #look through the users
-    it = iter(ourServer.members)
-    for user in it:
-        #print(user.name + " " + str(user.status))                  
-        #if they arent offline then add them
-        if(str(user.status) != "offline" and user.name != "DAD Scrim BOT"):
-            onlineUsers.append(user.name)
-
-    #sort the online users
-    onlineUsers.sort(key=str.lower)
-    #print(onlineUsers)
-
 
 
 @client.event
 async def on_message(message):
     #heres when someone actually uses !scrim
     global inProgress
-    if message.content.startswith('!10man') and inProgress == False:
-        #check whos all online
-        onlineUsers = []
-        
-        #look through the users
-        it = iter(ourServer.members)
-        for user in it:
-            #print(user.name + " " + str(user.status))                  
-            #if they arent offline then add them
-            if(str(user.status) == "online" and user.name != "DAD Scrim BOT"):
-                onlineUsers.append(user.name)
+    global readyUsers
+    author = str(message.author).split("#")[0]
+    if(message.channel.name != "bot-setup" and message.content.startswith("!")):
+        await client.send_message(message.channel, "Please use the bot-setup channel")
+        return    
 
-        #sort the online users
-        onlineUsers.sort(key=str.lower)
-        #print(onlineUsers)
 
-        #not enough people
-        if(len(onlineUsers) < 10):
-            await client.send_message(message.channel, "Not enough players for a 10 man, need " + str(10 - len(onlineUsers)) + " more")    
+
+    if (message.content.startswith("!gaben") or message.content.startswith('!ready')) and inProgress == False and len(readyUsers) < 10:        
+        if(author in readyUsers):            
+            await client.send_message(message.channel, "You're already ready, chill")    
         else:
-            #an actual 10man can be created!
-            inProgress = True
-            await client.send_message(message.channel, "There are currently " + str(len(onlineUsers)) + " online. " + "People who are online: \n" + ' '.join(onlineUsers));
-    #trying to start one when its already on            
-    elif message.content.startswith('!10man') and inProgress == True:
-        await client.send_message(message.channel, "A 10man is currently being setup, complete that setup or type !stop")
+            readyUsers.append(author)
+            await client.send_message(message.channel, author + " is now ready, we need " + str(10 - len(readyUsers)) + " more")
+            if(len(readyUsers) == 1):
+                await client.send_message(message.channel, "we ready boiz.")
+
+
+
+    elif (message.content.startswith('!unready') or message.content.startswith('!ungaben')) and inProgress == False:
+        for user in readyUsers:
+            if user.upper() == author.upper():
+                readyUsers.remove(user)
+                await client.send_message(message.channel, author + " You are no longer ready. We now need " + str(10 - len(readyUsers)) + " more")            
+                break
+
     #stopping one        
-    elif message.content.startswith('!stop') and inProgress == True:
+    elif message.content.startswith('!done'):
         inProgress = False
-        await client.send_message(message.channel, "Current 10man setup stopped, to make a new one, type !10man")    
-
-
-    #     counter = 0
-    #     tmp = await client.send_message(message.channel, 'Calculating messages...')
-    #     async for log in client.logs_from(message.channel, limit=100):
-    #         if log.author == message.author:
-    #             counter += 1
-
-    #     await client.edit_message(tmp, 'You have {} messages.'.format(counter))
-    # elif message.content.startswith('!sleep'):
-    #     await asyncio.sleep(5)
-    #     await client.send_message(message.channel, 'Done sleeping')
+        readyUsers = []
+        await client.send_message(message.channel, "Current 10man finished, to make a new one, type !10man")    
 
 client.run(myToken.token)
