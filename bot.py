@@ -13,19 +13,29 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')    
+    #iterate over all servers
     t = iter(client.servers)    
-    for server in t:            
+    for server in t:         
+        #find ours and save it   
         if(server.name == "10 men"):            
             ourServer = server
 
+
+    #EVERYTHING BELOW WILL GO INTO THE ON MESSAGE UNDER !SCRIM, ITS JUST EASIER TO PUT HERE FOR TESTING PURPOSES
+    #SO WE DONT HAVE TO SPAM THE DISCORD WITH !SCRIM
+
+    #check whos all online
     onlineUsers = []
-    #test stuff here
+    
+    #look through the users
     it = iter(ourServer.members)
     for user in it:
         print(user.name + " " + str(user.status))                  
+        #if they arent offline then add them
         if(str(user.status) != "offline" and user.name != "DAD Scrim BOT"):
             onlineUsers.append(user.name)
 
+    #sort the online users
     onlineUsers.sort(key=str.lower)
     print(onlineUsers)
 
@@ -38,7 +48,7 @@ async def on_message(message):
         it = iter(ourServer.members)
         # for user in it:            
         #     print(user.status)           
-        await client.send_message(message.channel,'IM WORKING ON IT FUCK OFF');
+        await client.send_message(message.channel,'IM WORKING ON IT');
 
 
     #     counter = 0
