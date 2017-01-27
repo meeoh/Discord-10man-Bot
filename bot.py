@@ -30,7 +30,7 @@ async def on_ready():
     #look through the users
     it = iter(ourServer.members)
     for user in it:
-        print(user.name + " " + str(user.status))                  
+        #print(user.name + " " + str(user.status))                  
         #if they arent offline then add them
         if(str(user.status) != "offline" and user.name != "DAD Scrim BOT"):
             onlineUsers.append(user.name)
@@ -45,10 +45,22 @@ async def on_ready():
 async def on_message(message):
     #heres when someone actually uses !scrim
     if message.content.startswith('!scrim'):
+        #check whos all online
+        onlineUsers = []
+        
+        #look through the users
         it = iter(ourServer.members)
-        # for user in it:            
-        #     print(user.status)           
-        await client.send_message(message.channel,'IM WORKING ON IT');
+        for user in it:
+            print(user.name + " " + str(user.status))                  
+            #if they arent offline then add them
+            if(str(user.status) == "online" and user.name != "DAD Scrim BOT"):
+                onlineUsers.append(user.name)
+
+        #sort the online users
+        onlineUsers.sort(key=str.lower)
+        print(onlineUsers)
+
+        await client.send_message(message.channel, "People who are online: \n" + ' '.join(onlineUsers));
 
 
     #     counter = 0
