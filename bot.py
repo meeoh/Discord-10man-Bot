@@ -13,15 +13,28 @@ teamOne = []
 teamTwo = []
 currentPickingCaptain = ""
 pickNum = 1
+team1VoiceChannel = None
+team2VoiceChannel = None
 
 
 @client.event
 async def on_ready():
     global ourServer
+    global team1VoiceChannel
+    global team2VoiceChannel
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')    
+    t = iter(client.servers)    
+    for server in t:            
+        if(server.name == "bottestserver"):            
+            ourServer = server
+            for channel in ourServer.channels:
+                if channel.name == "Team 1":
+                    team1VoiceChannel = channel
+                elif channel.name == "Team 2":
+                    team2VoiceChannel = channel
     
 def clear_chat_channel(message):
     counter = 0
@@ -46,12 +59,10 @@ async def on_message(message):
 
     author = str(message.author).split("#")[0]
 
-    if(message.channel.name != "testchannel" and message.content.startswith("!")):
-        print(message.channel.name)
+    if(message.channel.name != "testchannel" and message.channel.name != "10 men" and message.content.startswith("!")):
+        #print(message.channel.name)
         await client.send_message(message.channel, "Please use the bot-setup channel")
         return    
-
-
 
     if (message.content.startswith("!gaben") or message.content.startswith('!ready')) and inProgress == False and len(readyUsers) < 10:        
         if(author in readyUsers):            
@@ -60,7 +71,7 @@ async def on_message(message):
         else:
             readyUsers.append(author)
             await client.send_message(message.channel, author + " is now ready, we need " + str(10 - len(readyUsers)) + " more")
-            if(len(readyUsers) == 2):
+            if(len(readyUsers) == 3):
                 await client.send_message(message.channel, "we ready boiz. Please pick two captains by doing !captains captain1 captain2")
                 inProgress = True
 
@@ -72,49 +83,77 @@ async def on_message(message):
 
         firstCaptain = message.content.split(" ",1)[1].split()[0]
         secondCaptain = message.content.split(" ",1)[1].split()[1]
-        await client.send_message(message.channel, "First captain is now " + firstCaptain + ". Second captain is now " + secondCaptain)
-        await client.send_message(message.channel, firstCaptain + " it is now your pick, pick with !pick user. Please choose from " + " ".join(readyUsers))
         readyUsers.remove(firstCaptain)
         readyUsers.remove(secondCaptain)
+        await client.send_message(message.channel, "First captain is now " + firstCaptain + ". Second captain is now " + secondCaptain)
+        await client.send_message(message.channel, firstCaptain + " it is now your pick, pick with !pick user. Please choose from " + " ".join(readyUsers))
+        
 
     elif (message.content.startswith('!pick') and inProgress == True and pickNum < 10):
-        if(pickNum == 9):
-            await client.send_message(message.channel, "The teams are now made and bot setup is finished.")
-            inProgress = False
-            readyUsers = []
-            firstCaptain = ""
-            secondCaptain = ""
-            pickNum = 1
-            return
 
-        if author.upper() == firstCaptain.upper() and (pickNum == 1 or pickNum == 4 or pickNum == 6 or pickNum == 8 or pickNum == 10):
+        if author.upper() == firstCaptain.upper() and (pickNum == 1 or pickNum == 4 or pickNum == 6 or pickNum == 8):
             pickedUser = message.content.split(" ",1)[1]
+            if(pickedUser.upper() not in (name.upper() for name in readyUsers)):
+                await client.send_message(message.channel, pickedUser + " is not a real user, please pick again")
+                return
+
             teamOne.append(pickedUser)
+
+            it = iter(ourServer.members)
+            for user in it:          
+                if(user.name.split("#")[0].upper() == pickedUser.upper()):
+                    await client.move_member(user,team1VoiceChannel)
+                    break
+                    
+
+
             for temp in readyUsers:
                 if temp.upper() == pickedUser.upper():
                     readyUsers.remove(temp)
                     break       
 
             pickNum+=1
+            if(pickNum == 10):
+                await client.send_message(message.channel, "The teams are now made and bot setup is finished.")
+                inProgress = False
+                readyUsers = []
+                firstCaptain = ""
+                secondCaptain = ""
+                pickNum = 1
+                return
             if(pickNum == 2 or pickNum == 3 or pickNum == 5 or pickNum == 7 or pickNum == 9):
                 await client.send_message(message.channel, secondCaptain + " it is now your pick, pick with !pick user. Please choose from " + " ".join(readyUsers))
             else:
                 await client.send_message(message.channel, firstCaptain + " please pick again from" + " ".join(readyUsers))
 
-    if message.content.startswith('!clear'):
-        clear_chat_channel(message)
 
-
-
-        if author.upper() == secondCaptain.upper() and (pickNum == 2 or pickNum == 3 or pickNum == 5 or pickNum == 7 or pickNum == 9):
+        if author.upper() == secondCaptain.upper() and (pickNum == 2 or pickNum == 3 or pickNum == 5 or pickNum == 7):
             pickedUser = message.content.split(" ",1)[1]
+            if(pickedUser.upper() not in (name.upper() for name in readyUsers)):
+                await client.send_message(message.channel, pickedUser + " is not a real user, please pick again")
+                return
             teamTwo.append(pickedUser)
+            
+            it = iter(ourServer.members)
+            for user in it:          
+                if(user.name.split("#")[0].upper() == pickedUser.upper()):
+                    await client.move_member(user,team2VoiceChannel)
+                    break
+
             for temp in readyUsers:
                 if temp.upper() == pickedUser.upper():
                     readyUsers.remove(temp)
                     break    
 
             pickNum+=1
+            if(pickNum == 10):
+                await client.send_message(message.channel, "The teams are now made and bot setup is finished.")
+                inProgress = False
+                readyUsers = []
+                firstCaptain = ""
+                secondCaptain = ""
+                pickNum = 1
+                return
             if(pickNum == 1 or pickNum == 4 or pickNum == 6 or pickNum == 8 or pickNum == 10):
                 await client.send_message(message.channel, firstCaptain + " it is now your pick, pick with !pick user. Please choose from " + " ".join(readyUsers))
             else:
@@ -136,5 +175,8 @@ async def on_message(message):
         pickNum = 1
         await client.send_message(message.channel, "Current 10man finished, to make a new one, we need 10 ready users")    
 
+
+    elif message.content.startswith('!clear'):
+        clear_chat_channel(message)
 
 client.run(myToken.token)
