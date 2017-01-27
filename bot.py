@@ -17,7 +17,7 @@ pickNum = 1
 team1VoiceChannel = None
 team2VoiceChannel = None
 
-serverName = "bottestserver"
+serverName = "10 men"
 
 @client.event
 async def on_ready():
