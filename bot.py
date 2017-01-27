@@ -71,7 +71,7 @@ async def on_message(message):
         else:
             readyUsers.append(author)
             await client.send_message(message.channel, author + " is now ready, we need " + str(10 - len(readyUsers)) + " more")
-            if(len(readyUsers) == 3):
+            if(len(readyUsers) == 10):
                 await client.send_message(message.channel, "we ready boiz. Please pick two captains by doing !captains captain1 captain2")
                 inProgress = True
 
