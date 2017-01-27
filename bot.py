@@ -16,7 +16,16 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')    
-
+    
+def clear_chat_channel(message):
+    counter = 0
+    all_messages = client.messages
+    target_channel = message.channel
+    for message_step in all_messages:
+        if message_step.channel == target_channel:
+            client.delete_message(message_step)
+            counter += 1
+    client.send_message(message.channel, 'I have removed %s old messages' % counter)
 
 @client.event
 async def on_message(message):
@@ -32,12 +41,17 @@ async def on_message(message):
 
     if (message.content.startswith("!gaben") or message.content.startswith('!ready')) and inProgress == False and len(readyUsers) < 10:        
         if(author in readyUsers):            
-            await client.send_message(message.channel, "You're already ready, chill")    
+            await client.send_message(message.channel, "You're already ready, chill")
+
         else:
             readyUsers.append(author)
             await client.send_message(message.channel, author + " is now ready, we need " + str(10 - len(readyUsers)) + " more")
             if(len(readyUsers) == 10):
                 await client.send_message(message.channel, "we ready boiz.")
+
+    if message.content.startswith('!clear'):
+        clear_chat_channel(message)
+
 
 
 
@@ -52,6 +66,8 @@ async def on_message(message):
     elif message.content.startswith('!done'):
         inProgress = False
         readyUsers = []
-        await client.send_message(message.channel, "Current 10man finished, to make a new one, type !10man")    
+        await client.send_message(message.channel, "Current 10man finished, to make a new one, type !10man")  
+
+
 
 client.run(myToken.token)
