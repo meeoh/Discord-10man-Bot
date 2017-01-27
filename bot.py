@@ -24,6 +24,8 @@ async def on_ready():
     global ourServer
     global team1VoiceChannel
     global team2VoiceChannel
+    global testchannel
+
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -41,7 +43,17 @@ async def on_ready():
                     team1VoiceChannel = channel
                 elif channel.name == "Team 2":
                     team2VoiceChannel = channel
-    
+                elif channel.name== "testchannel":
+                    testchannel = channel
+
+@client.event
+async def on_member_update(before, after):
+    if after.game == None:
+        print('No game playing')
+
+    else:
+        await client.send_message(testchannel, after.name + " is playing Counterstrike Global Offensive")
+
 @client.event
 async def on_message(message):
     #we received a message
@@ -53,6 +65,10 @@ async def on_message(message):
     global teamOne
     global teamTwo
     global pickNum
+
+
+
+  
 
     #extract the author from the message
     #have to split since it comes in like Meeoh#3282
