@@ -22,7 +22,16 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')    
-
+    
+def clear_chat_channel(message):
+    counter = 0
+    all_messages = client.messages
+    target_channel = message.channel
+    for message_step in all_messages:
+        if message_step.channel == target_channel:
+            client.delete_message(message_step)
+            counter += 1
+    client.send_message(message.channel, 'I have removed %s old messages' % counter)
 
 @client.event
 async def on_message(message):
@@ -46,7 +55,8 @@ async def on_message(message):
 
     if (message.content.startswith("!gaben") or message.content.startswith('!ready')) and inProgress == False and len(readyUsers) < 10:        
         if(author in readyUsers):            
-            await client.send_message(message.channel, "You're already ready, chill")    
+            await client.send_message(message.channel, "You're already ready, chill")
+
         else:
             readyUsers.append(author)
             await client.send_message(message.channel, author + " is now ready, we need " + str(10 - len(readyUsers)) + " more")
@@ -91,6 +101,10 @@ async def on_message(message):
             else:
                 await client.send_message(message.channel, firstCaptain + " please pick again from" + " ".join(readyUsers))
 
+    if message.content.startswith('!clear'):
+        clear_chat_channel(message)
+
+
 
         if author.upper() == secondCaptain.upper() and (pickNum == 2 or pickNum == 3 or pickNum == 5 or pickNum == 7 or pickNum == 9):
             pickedUser = message.content.split(" ",1)[1]
@@ -121,5 +135,6 @@ async def on_message(message):
         secondCaptain = ""
         pickNum = 1
         await client.send_message(message.channel, "Current 10man finished, to make a new one, we need 10 ready users")    
+
 
 client.run(myToken.token)
