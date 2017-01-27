@@ -43,7 +43,7 @@ async def on_ready():
                     team1VoiceChannel = channel
                 elif channel.name == "Team 2":
                     team2VoiceChannel = channel
-                elif channel.name== "testchannel":
+                elif channel.name== "general":
                     testchannel = channel
 
 @client.event
