@@ -47,13 +47,6 @@ async def on_ready():
                     testchannel = channel
 
 @client.event
-async def on_member_update(before, after):
-    if after.game == None:
-        print('No game playing')
-    elif after.server.name == "10 men":
-        await client.send_message(testchannel, after.name + " is playing Counterstrike Global Offensive")
-
-@client.event
 async def on_message(message):
     #we received a message
     #modifying these globals
