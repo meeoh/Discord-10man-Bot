@@ -205,5 +205,9 @@ async def on_message(message):
         secondCaptain = ""
         pickNum = 1
         await client.send_message(message.channel, "Current 10man finished, to make a new one, we need 10 ready users")    
+    
+    elif message.content.startswith('!whosready'):
+        await client.send_message(message.channel, " ".join(readyUsers))
+
 
 client.run(myToken.token)
