@@ -159,7 +159,7 @@ async def on_message(message):
                 await client.send_message(message.channel, firstCaptain + " please pick again from" + " ".join(readyUsers))
 
         #similar to above, just for team 2 and captain 2
-        else if author.upper() == secondCaptain.upper() and (pickNum == 2 or pickNum == 3 or pickNum == 5 or pickNum == 7):
+        elif author.upper() == secondCaptain.upper() and (pickNum == 2 or pickNum == 3 or pickNum == 5 or pickNum == 7):
             pickedUser = message.content.split(" ",1)[1]
             if(pickedUser.upper() not in (name.upper() for name in readyUsers)):
                 await client.send_message(message.channel, pickedUser + " is not a real user, please pick again")
