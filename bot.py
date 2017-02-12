@@ -159,7 +159,7 @@ async def on_message(message):
                 await client.send_message(message.channel, firstCaptain + " please pick again from" + " ".join(readyUsers))
 
         #similar to above, just for team 2 and captain 2
-        if author.upper() == secondCaptain.upper() and (pickNum == 2 or pickNum == 3 or pickNum == 5 or pickNum == 7):
+        else if author.upper() == secondCaptain.upper() and (pickNum == 2 or pickNum == 3 or pickNum == 5 or pickNum == 7):
             pickedUser = message.content.split(" ",1)[1]
             if(pickedUser.upper() not in (name.upper() for name in readyUsers)):
                 await client.send_message(message.channel, pickedUser + " is not a real user, please pick again")
@@ -190,6 +190,10 @@ async def on_message(message):
                 await client.send_message(message.channel, firstCaptain + " it is now your pick, pick with !pick user. Please choose from " + " ".join(readyUsers))
             else:
                 await client.send_message(message.channel, secondCaptain + " please pick again from" + " ".join(readyUsers))
+
+        else:
+            await client.send_message(message.channel, "You're not a captain, sorry")
+
     #unready command               
     elif (message.content.startswith('!unready') or message.content.startswith('!ungaben')) and inProgress == False:
         #make sure the user exists
