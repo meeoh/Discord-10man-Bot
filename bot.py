@@ -80,7 +80,7 @@ async def on_message(message):
         #actually readying up
         else:
             #add them to the ready list and send a message
-            readyUsers.append(author)
+            readyUsers.append(author.upper())
 
             if(len(readyUsers) == 8 or len(readyUsers) == 9):
                 it = iter(ourServer.members)
@@ -89,7 +89,7 @@ async def on_message(message):
                     if(str(user.status) == "online" and user.name != "DAD Scrim BOT" and user.name not in readyUsers):
                         message = message + " @" + user.name
                         await client.send_message(message.channel, message + " we only need " + 10 - len(readyUsers) + " PLS READY UP")
-            elif(len(readyUsers) == 3):
+            elif(len(readyUsers) == 10):
                 #we have 10 ready users, now need captains
                 await client.send_message(message.channel, "we ready boiz. Please pick two captains by doing !captains captain1 captain2")
                 inProgress = True
@@ -105,8 +105,8 @@ async def on_message(message):
             return
 
         #get the first and second captains, remove them from the ready list
-        firstCaptain = message.content.split(" ",1)[1].split()[0]
-        secondCaptain = message.content.split(" ",1)[1].split()[1]
+        firstCaptain = message.content.split(" ",1)[1].split()[0].upper()
+        secondCaptain = message.content.split(" ",1)[1].split()[1].upper()
         readyUsers.remove(firstCaptain)
         readyUsers.remove(secondCaptain)
         #send a message about captains and picks
