@@ -89,10 +89,8 @@ async def on_message(message):
                     if(str(user.status) == "online" and user.name != "DAD Scrim BOT" and user.name not in readyUsers):
                         message = message + " @" + user.name
                         await client.send_message(message.channel, message + " we only need " + 10 - len(readyUsers) + " PLS READY UP")
-
-
             await client.send_message(message.channel, author + " is now ready, we need " + str(10 - len(readyUsers)) + " more")
-            if(len(readyUsers) == 10):
+            elif(len(readyUsers) == 3):
                 #we have 10 ready users, now need captains
                 await client.send_message(message.channel, "we ready boiz. Please pick two captains by doing !captains captain1 captain2")
                 inProgress = True
